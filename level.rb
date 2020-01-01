@@ -53,6 +53,8 @@ class Level
       # Draw ground everywhere first, to cover eventual holes
       @map.each_with_index do |array, row|
         array.each_with_index do |tile_type, column|
+          next if tile_type == NOTHING
+
           Sprites.instance[GROUND].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
         end
       end
