@@ -20,13 +20,9 @@ class Game < Gosu::Window
     when :start
       @start_screen.draw
     when :level
-      Gosu.translate(50, 50) do
-        @level.draw
-      end
+      @level.draw
     when :win
-      Gosu.translate(50, 50) do
-        @level.draw
-      end
+      @level.draw
 
       Gosu.draw_rect(0, Display::HEIGHT / 3, Display::WIDTH, Display::HEIGHT / 3, 0xff_1C8749, 4)
 

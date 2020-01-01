@@ -13,6 +13,8 @@ class Level
   def initialize
     @levels = Dir['levels/*'].sort
     @current_level_index = -1
+    @phone = Gosu::Image.new('assets/phone.png')
+    @undos = 3
 
     next_level
   end
@@ -38,6 +40,8 @@ class Level
     level = load_level(@levels[@current_level_index])
 
     @player = Player.new(level['player']['initial']['x'], level['player']['initial']['y'])
+
+    @last_move = nil
   end
 
   def next_level?
@@ -45,31 +49,54 @@ class Level
   end
 
   def draw
-    # Draw ground everywhere first, to cover eventual holes
-    @map.each_with_index do |array, row|
-      array.each_with_index do |tile_type, column|
-        Sprites.instance[GROUND].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
+    Gosu.translate(50, 70) do
+      # Draw ground everywhere first, to cover eventual holes
+      @map.each_with_index do |array, row|
+        array.each_with_index do |tile_type, column|
+          Sprites.instance[GROUND].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
+        end
       end
+
+      @map.each_with_index do |array, row|
+        array.each_with_index do |tile_type, column|
+          Sprites.instance[tile_type].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
+        end
+      end
+
+      @goals.each do |position|
+        Sprites.instance[GOAL].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 2
+
+        if box_coordinates.include?(position)
+          Sprites.instance[74].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 3
+        end
+      end
+
+      @player.draw
     end
 
-    @map.each_with_index do |array, row|
-      array.each_with_index do |tile_type, column|
-        Sprites.instance[tile_type].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
-      end
+    @undos.times do |index|
+      @phone.draw(10 + index * 25, 10, 1, 0.4, 0.4)
     end
-
-    @goals.each do |position|
-      Sprites.instance[GOAL].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 2
-
-      if box_coordinates.include?(position)
-        Sprites.instance[74].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 3
-      end
-    end
-
-    @player.draw
   end
 
   def button_up(id)
+    case id
+    when Gosu::KB_U
+      if @last_move && @undos > 0
+        @undos -= 1
+
+        @player.x = @last_move[:before][:player][0]
+        @player.y = @last_move[:before][:player][1]
+
+        box_after = @last_move[:after][:box]
+        box_before = @last_move[:before][:box]
+
+        @map[box_after[1]][box_after[0]] = GROUND
+        @map[box_before[1]][box_before[0]] = BOX
+      end
+      return
+    end
+
     target = case id
     when Gosu::KbRight
       Vector[@player.x + 1, @player.y]
@@ -93,6 +120,11 @@ class Level
 
       case @map[box_target[1]][box_target[0]]
       when GROUND, GOAL
+        @last_move = {
+          before: { player: Vector[@player.x, @player.y], box: target },
+          after: { player: target, box: box_target }
+        }
+
         @player.x = target[0]
         @player.y = target[1]
 
