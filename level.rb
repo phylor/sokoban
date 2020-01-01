@@ -132,6 +132,12 @@ class Level
 
         @map[box_target[1]][box_target[0]] = BOX
         @map[target[1]][target[0]] = GROUND
+
+        if @goals.include?(box_target.to_a)
+          Gosu::Sample.new('assets/sound/final_place.ogg').play
+        else
+          Gosu::Sample.new('assets/sound/shift.ogg').play
+        end
       end
     end
   end
