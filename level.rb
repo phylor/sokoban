@@ -1,6 +1,8 @@
 require 'matrix'
 require 'yaml'
 
+require_relative './sprites'
+
 class Level
   WALL = 97
   GROUND = 89
@@ -8,11 +10,7 @@ class Level
   GOAL = 25
   NOTHING = 0
 
-  TILE_SIZE = 64
-
   def initialize
-    @sprites = Gosu::Image.load_tiles 'assets/kenney_sokobanpack/Tilesheet/sokoban_tilesheet.png', TILE_SIZE, TILE_SIZE
-
     @levels = Dir['levels/*'].sort
     @current_level_index = -1
 
@@ -50,21 +48,21 @@ class Level
     # Draw ground everywhere first, to cover eventual holes
     @map.each_with_index do |array, row|
       array.each_with_index do |tile_type, column|
-        @sprites[GROUND].draw column * TILE_SIZE, row * TILE_SIZE, 1
+        Sprites.instance[GROUND].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
       end
     end
 
     @map.each_with_index do |array, row|
       array.each_with_index do |tile_type, column|
-        @sprites[tile_type].draw column * TILE_SIZE, row * TILE_SIZE, 1
+        Sprites.instance[tile_type].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
       end
     end
 
     @goals.each do |position|
-      @sprites[GOAL].draw position[0] * TILE_SIZE, position[1] * TILE_SIZE, 2
+      Sprites.instance[GOAL].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 2
 
       if box_coordinates.include?(position)
-        @sprites[74].draw position[0] * TILE_SIZE, position[1] * TILE_SIZE, 3
+        Sprites.instance[74].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 3
       end
     end
 
