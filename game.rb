@@ -21,6 +21,10 @@ class Game < Gosu::Window
     end
   end
 
+  def button_up(id)
+    @level.button_up(id)
+  end
+
   private
 
   def draw_background
