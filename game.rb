@@ -24,13 +24,17 @@ class Game < Gosu::Window
         @level.draw
       end
     when :win
-      Gosu.draw_rect(0, 0, Display::WIDTH, Display::HEIGHT, 0xff_1C8749)
+      Gosu.translate(50, 50) do
+        @level.draw
+      end
+
+      Gosu.draw_rect(0, Display::HEIGHT / 3, Display::WIDTH, Display::HEIGHT / 3, 0xff_1C8749, 4)
 
       @win_message = Gosu::Image.from_text('You win!', 40, width: Display::WIDTH, align: :center, font: 'assets/Kenney Future.ttf')
-      @win_message.draw(0, Display::HEIGHT / 2 - 40, 2)
+      @win_message.draw(0, Display::HEIGHT / 2 - 40, 4)
 
       @next_level_message = Gosu::Image.from_text(@level.next_level? ? 'Next level [enter]' : 'Quit [enter]', 20, width: Display::WIDTH, align: :center, font: 'assets/Kenney Future.ttf')
-      @next_level_message.draw(0, Display::HEIGHT / 2, 2)
+      @next_level_message.draw(0, Display::HEIGHT / 2, 4)
     end
   end
 
