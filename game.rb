@@ -27,6 +27,9 @@ class Game < Gosu::Window
 
       @win_message = Gosu::Image.from_text('You win!', 40, width: WIDTH, align: :center, font: 'assets/Kenney Future.ttf')
       @win_message.draw(0, HEIGHT / 2 - 40, 2)
+
+      @next_level_message = Gosu::Image.from_text(@level.next_level? ? 'Next level [enter]' : 'Quit [enter]', 20, width: WIDTH, align: :center, font: 'assets/Kenney Future.ttf')
+      @next_level_message.draw(0, HEIGHT / 2, 2)
     end
   end
 
@@ -34,6 +37,15 @@ class Game < Gosu::Window
     @level.button_up(id)
 
     @state = :win if @level.solved?
+
+    if @state == :win && (id == Gosu::KbEnter || id == Gosu::KbReturn)
+      if @level.next_level?
+        @level.next_level
+        @state = :level
+      else
+        close
+      end
+    end
   end
 
   private

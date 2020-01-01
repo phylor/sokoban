@@ -11,14 +11,38 @@ class Level
 
   def initialize
     @sprites = Gosu::Image.load_tiles 'assets/kenney_sokobanpack/Tilesheet/sokoban_tilesheet.png', TILE_SIZE, TILE_SIZE
-    @player = Player.new(2, 1)
 
-    @map = YAML::load_file('levels/0.yml')
-    @map = @map.map do |row|
+    @levels = Dir['levels/*'].sort
+    @current_level_index = -1
+
+    next_level
+  end
+
+  def load_level(filename)
+    level = YAML::load_file(filename)
+
+    @map = level['map']['initial'].map do |row|
       row.map do |cell|
         eval(cell.to_s.upcase)
       end
     end
+
+    @goals = level['goals']
+
+    level
+  end
+
+  def next_level
+    return unless next_level?
+
+    @current_level_index += 1
+    level = load_level(@levels[@current_level_index])
+
+    @player = Player.new(level['player']['initial']['x'], level['player']['initial']['y'])
+  end
+
+  def next_level?
+    @current_level_index < @levels.length - 1
   end
 
   def draw
@@ -32,6 +56,14 @@ class Level
     @map.each_with_index do |array, row|
       array.each_with_index do |tile_type, column|
         @sprites[tile_type].draw column * TILE_SIZE, row * TILE_SIZE, 1
+      end
+    end
+
+    @goals.each do |position|
+      @sprites[GOAL].draw position[0] * TILE_SIZE, position[1] * TILE_SIZE, 2
+
+      if box_coordinates.include?(position)
+        @sprites[74].draw position[0] * TILE_SIZE, position[1] * TILE_SIZE, 3
       end
     end
 
@@ -72,6 +104,16 @@ class Level
   end
 
   def solved?
-    !@map.flatten.include?(GOAL)
+    box_coordinates.sort == @goals.sort
+  end
+
+  def box_coordinates
+    @map.map.with_index do |row, row_index|
+      row.map.with_index do |cell, column_index|
+        { type: cell, x: column_index, y: row_index }
+      end
+    end.flatten(1).select { |cell| cell[:type] == BOX }.map do |box|
+      [box[:x], box[:y]]
+    end
   end
 end
