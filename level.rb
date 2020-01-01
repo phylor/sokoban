@@ -4,6 +4,7 @@ class Level
   WALL = 97
   GROUND = 89
   BOX = 6
+  GOAL = 25
 
   TILE_SIZE = 64
 
@@ -12,7 +13,7 @@ class Level
     [WALL, GROUND, GROUND, WALL],
     [WALL, BOX, BOX, WALL],
     [WALL, GROUND, GROUND, WALL],
-    [WALL, GROUND, GROUND, WALL],
+    [WALL, GOAL, GOAL, WALL],
     [WALL, WALL, WALL, WALL]
   ]
 
@@ -61,7 +62,7 @@ class Level
       box_target = target + push_vector
 
       case MAP[box_target[1]][box_target[0]]
-      when GROUND
+      when GROUND, GOAL
         @player.x = target[0]
         @player.y = target[1]
 
@@ -69,5 +70,9 @@ class Level
         MAP[target[1]][target[0]] = GROUND
       end
     end
+  end
+
+  def solved?
+    !MAP.flatten.include?(GOAL)
   end
 end

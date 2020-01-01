@@ -11,18 +11,29 @@ class Game < Gosu::Window
     super WIDTH, HEIGHT
 
     @level = Level.new
+    @state = :level
   end
 
   def draw
     draw_background
 
-    Gosu.translate(50, 50) do
-      @level.draw
+    case @state
+    when :level
+      Gosu.translate(50, 50) do
+        @level.draw
+      end
+    when :win
+      Gosu.draw_rect(0, 0, WIDTH, HEIGHT, 0xff_1C8749)
+
+      @win_message = Gosu::Image.from_text('You win!', 40, width: WIDTH, align: :center, font: 'assets/Kenney Future.ttf')
+      @win_message.draw(0, HEIGHT / 2 - 40, 2)
     end
   end
 
   def button_up(id)
     @level.button_up(id)
+
+    @state = :win if @level.solved?
   end
 
   private
