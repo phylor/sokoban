@@ -6,6 +6,7 @@ class Level
   GROUND = 89
   BOX = 6
   GOAL = 25
+  NOTHING = 0
 
   TILE_SIZE = 64
 
@@ -104,7 +105,7 @@ class Level
   end
 
   def solved?
-    box_coordinates.sort == @goals.sort
+    @goals.sort.all? { |goal| box_coordinates.include?(goal) }
   end
 
   def box_coordinates

@@ -1,0 +1,58 @@
+---
+player:
+  initial:
+    x: 4
+    y: 4
+map:
+  initial:
+    - - :nothing
+      - :nothing
+      - :wall
+      - :wall
+      - :wall
+      - :wall
+      - :wall
+      - :wall
+    - - :nothing
+      - :nothing
+      - :wall
+      - :ground
+      - :box
+      - :ground
+      - :ground
+      - :wall
+    - - :wall
+      - :wall
+      - :wall
+      - :ground
+      - :ground
+      - :ground
+      - :ground
+      - :wall
+    - - :wall
+      - :ground
+      - :ground
+      - :box
+      - :box
+      - :wall
+      - :wall
+      - :wall
+    - - :wall
+      - :ground
+      - :ground
+      - :ground
+      - :ground
+      - :wall
+      - :nothing
+      - :nothing
+    - - :wall
+      - :wall
+      - :wall
+      - :wall
+      - :wall
+      - :wall
+      - :nothing
+      - :nothing
+goals:
+  - [3, 1]
+  - [1, 4]
