@@ -1,13 +1,16 @@
+require 'matrix'
+
 class Level
   WALL = 97
   GROUND = 89
+  BOX = 6
 
   TILE_SIZE = 64
 
   MAP = [
     [WALL, WALL, WALL, WALL],
     [WALL, GROUND, GROUND, WALL],
-    [WALL, GROUND, GROUND, WALL],
+    [WALL, BOX, BOX, WALL],
     [WALL, GROUND, GROUND, WALL],
     [WALL, GROUND, GROUND, WALL],
     [WALL, WALL, WALL, WALL]
@@ -19,6 +22,13 @@ class Level
   end
 
   def draw
+    # Draw ground everywhere first, to cover eventual holes
+    MAP.each_with_index do |array, row|
+      array.each_with_index do |tile_type, column|
+        @sprites[GROUND].draw column * TILE_SIZE, row * TILE_SIZE, 1
+      end
+    end
+
     MAP.each_with_index do |array, row|
       array.each_with_index do |tile_type, column|
         @sprites[tile_type].draw column * TILE_SIZE, row * TILE_SIZE, 1
@@ -29,23 +39,35 @@ class Level
   end
 
   def button_up(id)
-    case id
+    target = case id
     when Gosu::KbRight
-      target = @player.x + 1
-
-      @player.x = target if MAP[@player.y][target] == GROUND
+      Vector[@player.x + 1, @player.y]
     when Gosu::KbLeft
-      target = @player.x - 1
-
-      @player.x = target if MAP[@player.y][target] == GROUND
+      Vector[@player.x - 1, @player.y]
     when Gosu::KbUp
-      target = @player.y - 1
-
-      @player.y = target if MAP[target][@player.x] == GROUND
+      Vector[@player.x, @player.y - 1]
     when Gosu::KbDown
-      target = @player.y + 1
+      Vector[@player.x, @player.y + 1]
+    else
+      Vector[@player.x, @player.y]
+    end
 
-      @player.y = target if MAP[target][@player.x] == GROUND
+    case MAP[target[1]][target[0]]
+    when GROUND
+      @player.x = target[0]
+      @player.y = target[1]
+    when BOX
+      push_vector = Vector[target[0] - @player.x, target[1] - @player.y]
+      box_target = target + push_vector
+
+      case MAP[box_target[1]][box_target[0]]
+      when GROUND
+        @player.x = target[0]
+        @player.y = target[1]
+
+        MAP[box_target[1]][box_target[0]] = BOX
+        MAP[target[1]][target[0]] = GROUND
+      end
     end
   end
 end
