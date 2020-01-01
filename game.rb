@@ -46,12 +46,15 @@ class Game < Gosu::Window
           close
         end
       end
-    when :level, :win
+    when :level
       @level.button_up(id)
 
-      @state = :win if @level.solved?
-
-      if @state == :win && (id == Gosu::KbEnter || id == Gosu::KbReturn)
+      if @level.solved?
+        @state = :win
+        Gosu::Sample.new('assets/sound/congratulations.ogg').play
+      end
+    when :win
+      if id == Gosu::KbEnter || id == Gosu::KbReturn
         if @level.next_level?
           @level.next_level
           @state = :level
