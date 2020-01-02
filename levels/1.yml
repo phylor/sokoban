@@ -14,15 +14,15 @@ map:
       - :wall
       - :wall
     - - :wall
-      - :goal
-      - :goal
+      - :ground
+      - :ground
       - :box
       - :ground
       - :box
       - :ground
       - :wall
     - - :wall
-      - :goal
+      - :ground
       - :ground
       - :ground
       - :ground

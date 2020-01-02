@@ -26,7 +26,7 @@ class Sokoban
       box_target = to + push_vector
 
       case @map[box_target[1]][box_target[0]]
-      when Sprites::GROUND, Sprites::GOAL
+      when Sprites::GROUND
         @last_move = {
           before: { player: @player.position, box: to },
           after: { player: to, box: box_target }
@@ -37,10 +37,7 @@ class Sokoban
         @map[to[1]][to[0]] = Sprites::GROUND
         @map[box_target[1]][box_target[0]] = Sprites::BOX
 
-        yield [
-          [:player_moved, from: from, to: to],
-          [:boxed_moved, from: to, to: box_target]
-        ]
+        yield [:player_moved, @goals.include?(box_target.to_a) ? :box_solved : :box_moved]
       end
     end
   end

@@ -86,15 +86,12 @@ class Level
       target = @player.position + move_vector(key)
 
       @sokoban.move_player(from: @player.position, to: target) do |events|
-        events.each do |event, data|
+        events.each do |event|
           case event
-          when :player_moved
           when :box_moved
-            if @sokoban.goals.include?(data[:to].to_a)
-              Gosu::Sample.new('assets/sound/final_place.ogg').play
-            else
-              Gosu::Sample.new('assets/sound/shift.ogg').play
-            end
+            Sounds[:shift].play
+          when :box_solved
+            Sounds[:final_place].play
           end
         end
       end

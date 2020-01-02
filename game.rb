@@ -4,6 +4,7 @@ require_relative './level'
 require_relative './player'
 require_relative './start_screen'
 require_relative './display'
+require_relative './sounds'
 
 class Game < Gosu::Window
   def initialize
@@ -51,7 +52,7 @@ class Game < Gosu::Window
 
       if @level.solved?
         @state = :win
-        Gosu::Sample.new('assets/sound/congratulations.ogg').play
+        Sounds[:congratulations].play
       end
     when :win
       if id == Gosu::KbEnter || id == Gosu::KbReturn
