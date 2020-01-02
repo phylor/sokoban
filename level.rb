@@ -3,14 +3,9 @@ require 'yaml'
 
 require_relative './sprites'
 require_relative './header'
+require_relative './level_loader'
 
 class Level
-  WALL = 97
-  GROUND = 89
-  BOX = 6
-  GOAL = 25
-  NOTHING = 0
-
   HEADER_HEIGHT = 50
 
   def initialize
@@ -24,27 +19,20 @@ class Level
   end
 
   def load_level(filename)
-    level = YAML::load_file(filename)
+    level = LevelLoader.new(filename)
 
-    @map = level['map']['initial'].map do |row|
-      row.map do |cell|
-        eval(cell.to_s.upcase)
-      end
-    end
-
-    @goals = level['goals']
-
-    level
+    @map = level.map
+    @goals = level.goals
+    @player.x = level.player[0]
+    @player.y = level.player[1]
   end
 
   def next_level
     return unless next_level?
 
     @current_level_index += 1
-    level = load_level(@levels[@current_level_index])
 
-    @player.x = level['player']['initial']['x']
-    @player.y = level['player']['initial']['y']
+    load_level(@levels[@current_level_index])
 
     @last_move = nil
   end
@@ -58,9 +46,9 @@ class Level
       # Draw ground everywhere first, to cover eventual holes
       @map.each_with_index do |array, row|
         array.each_with_index do |tile_type, column|
-          next if tile_type == NOTHING
+          next if tile_type == Sprites::NOTHING
 
-          Sprites.instance[GROUND].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
+          Sprites.instance[Sprites::GROUND].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
         end
       end
 
@@ -71,7 +59,7 @@ class Level
       end
 
       @goals.each do |position|
-        Sprites.instance[GOAL].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 2
+        Sprites.instance[Sprites::GOAL].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 2
 
         if box_coordinates.include?(position)
           Sprites.instance[74].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 3
@@ -103,8 +91,8 @@ class Level
         box_after = @last_move[:after][:box]
         box_before = @last_move[:before][:box]
 
-        @map[box_after[1]][box_after[0]] = GROUND
-        @map[box_before[1]][box_before[0]] = BOX
+        @map[box_after[1]][box_after[0]] = Sprites::GROUND
+        @map[box_before[1]][box_before[0]] = Sprites::BOX
       end
       return
     end
@@ -123,15 +111,15 @@ class Level
     end
 
     case @map[target[1]][target[0]]
-    when GROUND
+    when Sprites::GROUND
       @player.x = target[0]
       @player.y = target[1]
-    when BOX
+    when Sprites::BOX
       push_vector = Vector[target[0] - @player.x, target[1] - @player.y]
       box_target = target + push_vector
 
       case @map[box_target[1]][box_target[0]]
-      when GROUND, GOAL
+      when Sprites::GROUND, Sprites::GOAL
         @last_move = {
           before: { player: Vector[@player.x, @player.y], box: target },
           after: { player: target, box: box_target }
@@ -140,8 +128,8 @@ class Level
         @player.x = target[0]
         @player.y = target[1]
 
-        @map[box_target[1]][box_target[0]] = BOX
-        @map[target[1]][target[0]] = GROUND
+        @map[box_target[1]][box_target[0]] = Sprites::BOX
+        @map[target[1]][target[0]] = Sprites::GROUND
 
         if @goals.include?(box_target.to_a)
           Gosu::Sample.new('assets/sound/final_place.ogg').play
@@ -161,7 +149,7 @@ class Level
       row.map.with_index do |cell, column_index|
         { type: cell, x: column_index, y: row_index }
       end
-    end.flatten(1).select { |cell| cell[:type] == BOX }.map do |box|
+    end.flatten(1).select { |cell| cell[:type] == Sprites::BOX }.map do |box|
       [box[:x], box[:y]]
     end
   end
