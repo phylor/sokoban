@@ -24,7 +24,7 @@ class Game < Gosu::Window
     when :win
       @level.draw
 
-      Gosu.draw_rect(0, Display::HEIGHT / 3, Display::WIDTH, Display::HEIGHT / 3, 0xff_1C8749, 4)
+      Gosu.draw_rect(0, Display::HEIGHT / 3, Display::WIDTH, Display::HEIGHT / 3, 0xaf_1C8749, 4)
 
       @win_message = Gosu::Image.from_text('You win!', 40, width: Display::WIDTH, align: :center, font: 'assets/Kenney Future.ttf')
       @win_message.draw(0, Display::HEIGHT / 2 - 40, 4)
