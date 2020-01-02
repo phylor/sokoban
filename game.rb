@@ -36,6 +36,11 @@ class Game < Gosu::Window
   end
 
   def button_up(id)
+    case id
+    when Gosu::KB_S
+      Sounds.toggle
+    end
+
     case @state
     when :start
       @start_screen.button_up(id) do |action|
