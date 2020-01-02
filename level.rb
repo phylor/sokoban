@@ -2,6 +2,7 @@ require 'matrix'
 require 'yaml'
 
 require_relative './sprites'
+require_relative './header'
 
 class Level
   WALL = 97
@@ -15,10 +16,9 @@ class Level
   def initialize
     @levels = Dir['levels/*'].sort
     @current_level_index = -1
-    @phone = Gosu::Image.new('assets/phone.png')
-    @undos = 3
 
-    @font = Gosu::Font.new(20, name: 'assets/Kenney Future.ttf')
+    @player = Player.new(0, 0)
+    @header = Header.new(@player)
 
     next_level
   end
@@ -43,7 +43,8 @@ class Level
     @current_level_index += 1
     level = load_level(@levels[@current_level_index])
 
-    @player = Player.new(level['player']['initial']['x'], level['player']['initial']['y'])
+    @player.x = level['player']['initial']['x']
+    @player.y = level['player']['initial']['y']
 
     @last_move = nil
   end
@@ -80,11 +81,7 @@ class Level
       @player.draw
     end
 
-    @undos.times do |index|
-      @phone.draw(10 + index * 25, 10, 1, 0.4, 0.4)
-    end
-
-    @font.draw_text('[u] undo', 10 + @undos * 25 + 20, 20, 1)
+    @header.draw
   end
 
   def level_pixel_size
@@ -97,8 +94,8 @@ class Level
   def button_up(id)
     case id
     when Gosu::KB_U
-      if @last_move && @undos > 0
-        @undos -= 1
+      if @last_move && @player.undos > 0
+        @player.undos -= 1
 
         @player.x = @last_move[:before][:player][0]
         @player.y = @last_move[:before][:player][1]
