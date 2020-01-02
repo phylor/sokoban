@@ -7,8 +7,6 @@ require_relative './level_loader'
 require_relative './sokoban'
 
 class Level
-  HEADER_HEIGHT = 50
-
   def initialize
     @levels = Dir['levels/*'].sort
     @current_level_index = -1
@@ -41,7 +39,7 @@ class Level
   end
 
   def draw
-    Gosu.translate((Display::WIDTH - level_pixel_size[0]) / 2, (Display::HEIGHT - level_pixel_size[1] - HEADER_HEIGHT) / 2 + HEADER_HEIGHT) do
+    Gosu.translate((Display::WIDTH - level_pixel_size[0]) / 2, (Display::HEIGHT - level_pixel_size[1] - Header::HEIGHT) / 2 + Header::HEIGHT) do
       # Draw ground everywhere first, to cover eventual holes
       @sokoban.map.each_with_index do |array, row|
         array.each_with_index do |tile_type, column|
@@ -94,8 +92,10 @@ class Level
           case event
           when :box_moved
             Sounds[:shift].play
+            @player.moves += 1
           when :box_solved
             Sounds[:final_place].play
+            @player.moves += 1
           end
         end
       end

@@ -3,9 +3,11 @@ require_relative './coordinates'
 class Player
   attr_accessor :position
   attr_accessor :undos
+  attr_accessor :moves
 
   def initialize
     @undos = 3
+    @moves = 0
   end
 
   def draw

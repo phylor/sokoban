@@ -1,4 +1,6 @@
 class Header
+  HEIGHT = 50
+
   def initialize(player)
     @player = player
 
@@ -12,5 +14,7 @@ class Header
     end
 
     @font.draw_text('[u] undo', 10 + @player.undos * 25 + 20, 20, 1)
+
+    @font.draw_text_rel("Moves: #{@player.moves}", Display::WIDTH - 10, HEIGHT / 2, 1, 1.0, 0.5)
   end
 end
