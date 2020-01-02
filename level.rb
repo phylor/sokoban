@@ -12,7 +12,7 @@ class Level
     @levels = Dir['levels/*'].sort
     @current_level_index = -1
 
-    @player = Player.new(0, 0)
+    @player = Player.new
     @header = Header.new(@player)
 
     next_level
@@ -23,8 +23,7 @@ class Level
 
     @map = level.map
     @goals = level.goals
-    @player.x = level.player[0]
-    @player.y = level.player[1]
+    @player.position = level.player
   end
 
   def next_level
@@ -85,8 +84,7 @@ class Level
       if @last_move && @player.undos > 0
         @player.undos -= 1
 
-        @player.x = @last_move[:before][:player][0]
-        @player.y = @last_move[:before][:player][1]
+        @player.position = @last_move[:before][:player]
 
         box_after = @last_move[:after][:box]
         box_before = @last_move[:before][:box]
@@ -97,36 +95,34 @@ class Level
       return
     end
 
-    target = case id
+    target = @player.position + case id
     when Gosu::KbRight
-      Vector[@player.x + 1, @player.y]
+      Vector[1, 0]
     when Gosu::KbLeft
-      Vector[@player.x - 1, @player.y]
+      Vector[-1, 0]
     when Gosu::KbUp
-      Vector[@player.x, @player.y - 1]
+      Vector[0, -1]
     when Gosu::KbDown
-      Vector[@player.x, @player.y + 1]
+      Vector[0, 1]
     else
-      Vector[@player.x, @player.y]
+      Vector[0, 0]
     end
 
     case @map[target[1]][target[0]]
     when Sprites::GROUND
-      @player.x = target[0]
-      @player.y = target[1]
+      @player.position = target
     when Sprites::BOX
-      push_vector = Vector[target[0] - @player.x, target[1] - @player.y]
+      push_vector = target - @player.position
       box_target = target + push_vector
 
       case @map[box_target[1]][box_target[0]]
       when Sprites::GROUND, Sprites::GOAL
         @last_move = {
-          before: { player: Vector[@player.x, @player.y], box: target },
+          before: { player: @player.position, box: target },
           after: { player: target, box: box_target }
         }
 
-        @player.x = target[0]
-        @player.y = target[1]
+        @player.position = target
 
         @map[box_target[1]][box_target[0]] = Sprites::BOX
         @map[target[1]][target[0]] = Sprites::GROUND
