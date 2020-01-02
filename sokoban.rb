@@ -56,6 +56,8 @@ class Sokoban
 
       @map[box_after[1]][box_after[0]] = Sprites::GROUND
       @map[box_before[1]][box_before[0]] = Sprites::BOX
+      
+      @last_move = nil
     end
   end
 
