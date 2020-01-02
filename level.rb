@@ -82,6 +82,10 @@ class Level
     case key
     when Gosu::KB_U
       @sokoban.undo
+    when Gosu::KB_R
+      load_level(@levels[@current_level_index])
+
+      @last_move = nil
     when Gosu::KbLeft, Gosu::KbRight, Gosu::KbUp, Gosu::KbDown
       target = @player.position + move_vector(key)
 
