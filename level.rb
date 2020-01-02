@@ -10,6 +10,8 @@ class Level
   GOAL = 25
   NOTHING = 0
 
+  HEADER_HEIGHT = 50
+
   def initialize
     @levels = Dir['levels/*'].sort
     @current_level_index = -1
@@ -51,7 +53,7 @@ class Level
   end
 
   def draw
-    Gosu.translate(50, 70) do
+    Gosu.translate((Display::WIDTH - level_pixel_size[0]) / 2, (Display::HEIGHT - level_pixel_size[1] - HEADER_HEIGHT) / 2 + HEADER_HEIGHT) do
       # Draw ground everywhere first, to cover eventual holes
       @map.each_with_index do |array, row|
         array.each_with_index do |tile_type, column|
@@ -83,6 +85,13 @@ class Level
     end
 
     @font.draw_text('[u] undo', 10 + @undos * 25 + 20, 20, 1)
+  end
+
+  def level_pixel_size
+    rows = @map.length
+    columns = @map.map { |row| row.length }.max
+
+    Vector[columns * Sprites::TILE_SIZE, rows * Sprites::TILE_SIZE]
   end
 
   def button_up(id)
