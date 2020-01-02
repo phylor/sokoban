@@ -4,6 +4,7 @@ require 'yaml'
 require_relative './sprites'
 require_relative './header'
 require_relative './level_loader'
+require_relative './sokoban'
 
 class Level
   HEADER_HEIGHT = 50
@@ -21,9 +22,8 @@ class Level
   def load_level(filename)
     level = LevelLoader.new(filename)
 
-    @map = level.map
-    @goals = level.goals
     @player.position = level.player
+    @sokoban = Sokoban.new(level.map, level.goals, @player)
   end
 
   def next_level
@@ -43,7 +43,7 @@ class Level
   def draw
     Gosu.translate((Display::WIDTH - level_pixel_size[0]) / 2, (Display::HEIGHT - level_pixel_size[1] - HEADER_HEIGHT) / 2 + HEADER_HEIGHT) do
       # Draw ground everywhere first, to cover eventual holes
-      @map.each_with_index do |array, row|
+      @sokoban.map.each_with_index do |array, row|
         array.each_with_index do |tile_type, column|
           next if tile_type == Sprites::NOTHING
 
@@ -51,16 +51,16 @@ class Level
         end
       end
 
-      @map.each_with_index do |array, row|
+      @sokoban.map.each_with_index do |array, row|
         array.each_with_index do |tile_type, column|
           Sprites.instance[tile_type].draw column * Sprites::TILE_SIZE, row * Sprites::TILE_SIZE, 1
         end
       end
 
-      @goals.each do |position|
+      @sokoban.goals.each do |position, solved|
         Sprites.instance[Sprites::GOAL].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 2
 
-        if box_coordinates.include?(position)
+        if solved
           Sprites.instance[74].draw position[0] * Sprites::TILE_SIZE, position[1] * Sprites::TILE_SIZE, 3
         end
       end
@@ -72,30 +72,37 @@ class Level
   end
 
   def level_pixel_size
-    rows = @map.length
-    columns = @map.map { |row| row.length }.max
+    rows = @sokoban.map.length
+    columns = @sokoban.map.map { |row| row.length }.max
 
     Vector[columns * Sprites::TILE_SIZE, rows * Sprites::TILE_SIZE]
   end
 
-  def button_up(id)
-    case id
+  def button_up(key)
+    case key
     when Gosu::KB_U
-      if @last_move && @player.undos > 0
-        @player.undos -= 1
+      @sokoban.undo
+    when Gosu::KbLeft, Gosu::KbRight, Gosu::KbUp, Gosu::KbDown
+      target = @player.position + move_vector(key)
 
-        @player.position = @last_move[:before][:player]
-
-        box_after = @last_move[:after][:box]
-        box_before = @last_move[:before][:box]
-
-        @map[box_after[1]][box_after[0]] = Sprites::GROUND
-        @map[box_before[1]][box_before[0]] = Sprites::BOX
+      @sokoban.move_player(from: @player.position, to: target) do |events|
+        events.each do |event, data|
+          case event
+          when :player_moved
+          when :box_moved
+            if @sokoban.goals.include?(data[:to].to_a)
+              Gosu::Sample.new('assets/sound/final_place.ogg').play
+            else
+              Gosu::Sample.new('assets/sound/shift.ogg').play
+            end
+          end
+        end
       end
-      return
     end
+  end
 
-    target = @player.position + case id
+  def move_vector(key)
+    case key
     when Gosu::KbRight
       Vector[1, 0]
     when Gosu::KbLeft
@@ -107,46 +114,9 @@ class Level
     else
       Vector[0, 0]
     end
-
-    case @map[target[1]][target[0]]
-    when Sprites::GROUND
-      @player.position = target
-    when Sprites::BOX
-      push_vector = target - @player.position
-      box_target = target + push_vector
-
-      case @map[box_target[1]][box_target[0]]
-      when Sprites::GROUND, Sprites::GOAL
-        @last_move = {
-          before: { player: @player.position, box: target },
-          after: { player: target, box: box_target }
-        }
-
-        @player.position = target
-
-        @map[box_target[1]][box_target[0]] = Sprites::BOX
-        @map[target[1]][target[0]] = Sprites::GROUND
-
-        if @goals.include?(box_target.to_a)
-          Gosu::Sample.new('assets/sound/final_place.ogg').play
-        else
-          Gosu::Sample.new('assets/sound/shift.ogg').play
-        end
-      end
-    end
   end
 
   def solved?
-    @goals.sort.all? { |goal| box_coordinates.include?(goal) }
-  end
-
-  def box_coordinates
-    @map.map.with_index do |row, row_index|
-      row.map.with_index do |cell, column_index|
-        { type: cell, x: column_index, y: row_index }
-      end
-    end.flatten(1).select { |cell| cell[:type] == Sprites::BOX }.map do |box|
-      [box[:x], box[:y]]
-    end
+    @sokoban.solved?
   end
 end
