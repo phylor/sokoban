@@ -16,6 +16,8 @@ class Level
     @phone = Gosu::Image.new('assets/phone.png')
     @undos = 3
 
+    @font = Gosu::Font.new(20, name: 'assets/Kenney Future.ttf')
+
     next_level
   end
 
@@ -79,6 +81,8 @@ class Level
     @undos.times do |index|
       @phone.draw(10 + index * 25, 10, 1, 0.4, 0.4)
     end
+
+    @font.draw_text('[u] undo', 10 + @undos * 25 + 20, 20, 1)
   end
 
   def button_up(id)
