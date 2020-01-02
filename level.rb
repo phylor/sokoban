@@ -12,7 +12,7 @@ class Level
     @current_level_index = -1
 
     @player = Player.new
-    @header = Header.new(@player)
+    @header = Header.new(@player, self)
 
     next_level
   end
@@ -36,6 +36,10 @@ class Level
 
   def next_level?
     @current_level_index < @levels.length - 1
+  end
+
+  def level_number
+    @current_level_index
   end
 
   def draw
