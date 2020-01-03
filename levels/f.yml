@@ -1,0 +1,78 @@
+---
+player:
+  initial:
+    x: 8
+    y: 1
+map:
+  initial:
+  - - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+  - - :wall
+    - :ground
+    - :ground
+    - :ground
+    - :ground
+    - :ground
+    - :ground
+    - :box
+    - :ground
+    - :wall
+  - - :wall
+    - :ground
+    - :ground
+    - :box
+    - :ground
+    - :box
+    - :ground
+    - :box
+    - :ground
+    - :wall
+  - - :wall
+    - :ground
+    - :box
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+  - - :wall
+    - :ground
+    - :ground
+    - :wall
+    - :nothing
+    - :nothing
+    - :nothing
+    - :nothing
+    - :nothing
+    - :nothing
+  - - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :nothing
+    - :nothing
+    - :nothing
+    - :nothing
+    - :nothing
+    - :nothing
+goals:
+- - 6
+  - 1
+- - 7
+  - 1
+- - 8
+  - 1
+- - 1
+  - 4
+- - 2
+  - 4

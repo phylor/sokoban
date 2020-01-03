@@ -1,68 +1,50 @@
 ---
 player:
   initial:
-    x: 6
-    y: 3
+    x: 1
+    y: 1
 map:
   initial:
-  - - :nothing
-    - :nothing
-    - :wall
-    - :wall
-    - :wall
-    - :wall
-    - :nothing
-    - :nothing
-    - :nothing
-  - - :nothing
-    - :nothing
-    - :wall
-    - :ground
-    - :ground
-    - :wall
-    - :nothing
-    - :nothing
-    - :nothing
   - - :wall
     - :wall
     - :wall
-    - :ground
-    - :ground
     - :wall
     - :wall
     - :wall
-    - :nothing
   - - :wall
     - :ground
+    - :box
     - :ground
+    - :ground
+    - :wall
+  - - :wall
     - :ground
     - :box
     - :box
     - :ground
     - :wall
-    - :nothing
   - - :wall
     - :ground
     - :ground
+    - :wall
+    - :wall
+    - :wall
+  - - :wall
     - :ground
-    - :ground
-    - :box
     - :ground
     - :wall
+    - :nothing
     - :nothing
   - - :wall
     - :wall
     - :wall
     - :wall
-    - :wall
-    - :wall
-    - :wall
-    - :wall
+    - :nothing
     - :nothing
 goals:
 - - 4
+  - 1
+- - 4
   - 2
 - - 1
-  - 4
-- - 6
   - 4

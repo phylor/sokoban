@@ -1,0 +1,54 @@
+---
+player:
+  initial:
+    x: 5
+    y: 2
+map:
+  initial:
+  - - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+  - - :wall
+    - :ground
+    - :box
+    - :ground
+    - :ground
+    - :ground
+    - :ground
+    - :ground
+    - :ground
+    - :wall
+  - - :wall
+    - :ground
+    - :ground
+    - :ground
+    - :box
+    - :ground
+    - :box
+    - :ground
+    - :ground
+    - :wall
+  - - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+    - :wall
+goals:
+- - 7
+  - 1
+- - 1
+  - 2
+- - 2
+  - 2

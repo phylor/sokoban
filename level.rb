@@ -34,6 +34,16 @@ class Level
     @last_move = nil
   end
 
+  def previous_level
+    return if @current_level_index <= 0
+
+    @current_level_index -= 1
+
+    load_level(@levels[@current_level_index])
+
+    @last_move = nil
+  end
+
   def next_level?
     @current_level_index < @levels.length - 1
   end
@@ -103,6 +113,10 @@ class Level
           end
         end
       end
+    when Gosu::KB_PAGE_UP
+      previous_level
+    when Gosu::KB_PAGE_DOWN
+      next_level
     end
   end
 
