@@ -11,5 +11,5 @@ ruby game.rb
 
 ```
 gem install ocra
-ocra --output sokoban game.rb
+ocra --output Sokoban.exe --windows --chdir-first game.rb assets/**/* levels/**/*
 ```
