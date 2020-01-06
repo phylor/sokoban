@@ -4,12 +4,13 @@ class StartScreen
   def initialize
     @menu_entries = %i[new_game quit]
     @selected = 0
+    @title = Gosu::Image.new('assets/title.png')
   end
 
   def draw
     Gosu.draw_rect(0, 0, Display::WIDTH, Display::HEIGHT, 0xff_FAF0DC)
 
-    Fonts[:title].draw_text_rel('Sokoban', Display::WIDTH / 2, 50, 1, 0.5, 0, 1, 1, 0xff_000000)
+    @title.draw(Display::WIDTH / 2 - @title.width / 2, 50, 1)
 
     Fonts[:normal].draw_text_rel('New game', Display::WIDTH / 2, 200, 1, 0.5, 0, 1, 1, 0xff_000000)
     Sprites.instance.misc[180].draw(200, 185, 1, 1, 1, 0xff_2DCB70) if @menu_entries[@selected] == :new_game
